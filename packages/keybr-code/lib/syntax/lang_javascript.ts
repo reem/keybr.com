@@ -41,6 +41,44 @@ export default {
       },
     ],
   },
+  js_infix_op: {
+    alt: [
+      "+",
+      "-",
+      "*",
+      "/",
+      "%",
+      "**",
+      "&",
+      "|",
+      "^",
+      "<<",
+      ">>",
+      "==",
+      "!=",
+      "===",
+      "!==",
+      "<",
+      "<=",
+      ">",
+      ">=",
+    ],
+  },
+  js_infix_exp: {
+    seq: [
+      {
+        ref: "js_id",
+      },
+      " ",
+      {
+        ref: "js_infix_op",
+      },
+      " ",
+      {
+        ref: "js_id",
+      },
+    ],
+  },
   js_array_literal: {
     seq: [
       "[",
@@ -63,7 +101,7 @@ export default {
   },
   js_object_literal: {
     seq: [
-      "{ ",
+      "{",
       {
         ref: "js_property_name",
       },
@@ -71,7 +109,7 @@ export default {
       {
         ref: "js_property_value",
       },
-      " }",
+      "}",
     ],
   },
   js_property_name: {
@@ -236,10 +274,15 @@ export default {
       "str",
       "text",
       "value",
+      "Array",
+      "Object",
+      "prototype",
+      "constructor",
     ],
   },
   js_literal: {
     alt: [
+      "undefined",
       "null",
       "true",
       "false",
@@ -249,14 +292,43 @@ export default {
       {
         ref: "js_template_literal",
       },
+      {
+        ref: "js_infix_exp",
+      },
     ],
   },
+  js_string_id: {
+    alt: ["hover", "shadow", "click", "drag", "block"],
+  },
   js_string_literal: {
-    alt: ['"a"', '"b"', '"c"'],
+    alt: [
+      {
+        seq: [
+          "'",
+          {
+            ref: "js_string_id",
+          },
+          "'",
+        ],
+      },
+      {
+        seq: [
+          '"',
+          {
+            ref: "js_string_id",
+          },
+          '"',
+        ],
+      },
+    ],
   },
   js_template_literal: {
     seq: [
-      "`abc=${",
+      "`",
+      {
+        ref: "js_id",
+      },
+      " = ${",
       {
         ref: "js_id",
       },

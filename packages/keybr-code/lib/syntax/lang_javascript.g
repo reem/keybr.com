@@ -10,9 +10,13 @@ js_primary_exp ->
   | js_call_exp
   ;
 
+js_infix_op -> "+" | "-" | "*" | "/" | "%" | "**" | "&" | "|" | "^" | "<<" | ">>" | "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" ;
+
+js_infix_exp -> js_id _ js_infix_op _ js_id ;
+
 js_array_literal -> "[" js_primary_exp [ "," _ js_primary_exp ] "]" ;
 
-js_object_literal -> "{" _ js_property_name ":" _ js_property_value _ "}" ;
+js_object_literal -> "{" js_property_name ":" _ js_property_value "}" ;
 
 js_property_name -> js_id | "[" js_id "]" ;
 
@@ -75,10 +79,16 @@ js_id ->
   | "str"
   | "text"
   | "value"
+  | "Array"
+  | "Object"
+  | "prototype"
+  | "constructor"
   ;
 
-js_literal -> "null" | "true" | "false" | js_string_literal | js_template_literal ;
+js_literal -> "undefined" | "null" | "true" | "false" | js_string_literal | js_template_literal | js_infix_exp;
 
-js_string_literal -> "\"a\"" | "\"b\"" | "\"c\"" ;
+js_string_id -> "hover" | "shadow" | "click" | "drag" | "block" ;
 
-js_template_literal -> "`abc=${" js_id "}`" ;
+js_string_literal -> "'" js_string_id "'" | "\"" js_string_id "\"" ;
+
+js_template_literal -> "`" js_id " = ${" js_id "}`" ;
