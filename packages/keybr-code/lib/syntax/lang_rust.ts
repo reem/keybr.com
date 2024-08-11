@@ -629,10 +629,10 @@ export default {
     alt: [
       "with, a comma!",
       "xavier",
-      "quiz\n",
+      "quiz\\n",
       "cello",
-      "orange\\yellow",
-      "\t \n",
+      "orange\\\\yellow",
+      "\\t \\n",
     ],
   },
   rust_bool_literal: {

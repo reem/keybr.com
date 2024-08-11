@@ -162,10 +162,10 @@ rust_string_literal -> "\"" rust_string_content "\"" ;
 rust_string_content ->
     "with, a comma!"
   | "xavier"
-  | "quiz\n"
+  | "quiz\\n"
   | "cello"
-  | "orange\\yellow"
-  | "\t \n"
+  | "orange\\\\yellow"
+  | "\\t \\n"
   ;
 
 rust_bool_literal -> "true" | "false" ;
