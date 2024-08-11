@@ -76,6 +76,7 @@ export class Syntax implements EnumItem {
     Syntax.REGEX,
     Syntax.SHELL,
     Syntax.PYTHON,
+    Syntax.RUST,
   );
 
   private constructor(
@@ -88,7 +89,7 @@ export class Syntax implements EnumItem {
   }
 
   generate(rng?: RNG): string {
-    const output = new Output(200);
+    const output = new Output(250);
     while (true) {
       try {
         if (output.length > 0) {
