@@ -187,18 +187,57 @@ export default {
     ],
   },
   rust_if_statement: {
+    alt: [
+      {
+        seq: [
+          "if ",
+          {
+            ref: "rust_expression",
+          },
+          " ",
+          {
+            ref: "rust_block",
+          },
+          " else ",
+          {
+            ref: "rust_block",
+          },
+        ],
+      },
+      {
+        seq: [
+          "if let (",
+          {
+            ref: "rust_pattern",
+          },
+          ") = ",
+          {
+            ref: "rust_expression",
+          },
+          " ",
+          {
+            ref: "rust_block",
+          },
+          " else ",
+          {
+            ref: "rust_block",
+          },
+        ],
+      },
+    ],
+  },
+  rust_pattern: {
     seq: [
-      "if ",
       {
-        ref: "rust_expression",
+        ref: "rust_var_ident",
       },
-      " ",
+      " @ ",
       {
-        ref: "rust_block",
+        ref: "rust_number_literal",
       },
-      " else ",
+      "..",
       {
-        ref: "rust_block",
+        ref: "rust_number_literal",
       },
     ],
   },
@@ -589,13 +628,9 @@ export default {
   rust_string_content: {
     alt: [
       "with, a comma!",
-      "blah",
-      "click",
-      "bump",
       "xavier",
-      "quiz",
+      "quiz\n",
       "cello",
-      "form",
       "orange\\yellow",
       "\t \n",
     ],

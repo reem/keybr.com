@@ -46,7 +46,10 @@ rust_statement ->
 
 rust_let_statement -> "let" _ [ "mut" _ ] rust_var_ident [ ":" _ rust_type_ident ] _ "=" _ rust_expression ";" ;
 
-rust_if_statement -> "if" _ rust_expression _ rust_block _ "else" _ rust_block ;
+rust_if_statement -> "if" _ rust_expression _ rust_block _ "else" _ rust_block
+  | "if let (" rust_pattern ") =" _ rust_expression _ rust_block _ "else" _ rust_block;
+
+rust_pattern -> rust_var_ident _ "@" _ rust_number_literal ".." rust_number_literal;
 
 rust_loop_statement ->
     "loop" _ rust_block
@@ -158,13 +161,9 @@ rust_string_literal -> "\"" rust_string_content "\"" ;
 
 rust_string_content ->
     "with, a comma!"
-  | "blah"
-  | "click"
-  | "bump"
   | "xavier"
-  | "quiz"
+  | "quiz\n"
   | "cello"
-  | "form"
   | "orange\\yellow"
   | "\t \n"
   ;
