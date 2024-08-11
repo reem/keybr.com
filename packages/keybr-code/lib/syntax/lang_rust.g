@@ -6,7 +6,7 @@ rust_item ->
   | rust_impl
   ;
 
-rust_function -> "fn" _ rust_fn_ident [ rust_generics ] "(" rust_params ")" [ _ "->" _ rust_type ] _ rust_block ;
+rust_function -> [ "async" _ ]  "fn" _ rust_fn_ident [ rust_generics ] "(" rust_params ")" [ _ "->" _ rust_type ] _ rust_block ;
 
 rust_generics -> "<" rust_generic_param ">" ;
 
@@ -62,11 +62,21 @@ rust_expression ->
     rust_literal
   | rust_var_ident
   | rust_function_call
+  | rust_method_call
   | rust_infix_expression
-  | "(" rust_expression ", " rust_expression ")"
+  | rust_try_expression
+  | rust_vec_literal
   ;
 
+rust_try_expression -> rust_expression "?" ;
+
 rust_function_call -> rust_fn_ident "(" [ rust_expression ] ")" ;
+
+rust_method_call_partial -> "." rust_fn_ident "(" [ rust_expression ] ")";
+
+rust_method_calls -> rust_method_call_partial [ ".await" ] [ "?" ] [ rust_method_calls ] ;
+
+rust_method_call -> rust_var_ident rust_method_calls;
 
 rust_infix_expression -> rust_expression _ rust_infix_operator _ rust_expression ;
 
@@ -76,22 +86,32 @@ rust_infix_operator ->
   | "*"
   | "/"
   | "%"
-  | "=="
   | "!="
-  | "<"
-  | ">"
   | "<="
   | ">="
-  | "&&"
   | "||"
-  | "&"
   | "|"
   | "^"
-  | "<<"
-  | ">>"
   ;
 
-rust_struct -> "struct" _ rust_type_ident [ rust_generics ] _ "{" _ rust_struct_field "," _ rust_struct_field _ "}" ;
+rust_struct -> [ rust_derive_annotation ] "struct" _ rust_type_ident [ rust_generics ] _ "{" _ rust_struct_field "," _ rust_struct_field _ "}" ;
+
+rust_derive_annotation -> "#[derive(" rust_derive_traits ")]" _ ;
+
+rust_derive_traits ->
+    rust_derive_trait
+  | rust_derive_trait "," _ rust_derive_traits
+;
+
+rust_derive_trait ->
+    "Debug"
+  | "Clone"
+  | "PartialEq"
+  | "Eq"
+  | "Default"
+  | "Hash"
+  | "Copy"
+;
 
 rust_struct_field -> rust_var_ident ":" _ rust_type ;
 
@@ -99,7 +119,8 @@ rust_impl -> "impl" [ _ rust_generics ] _ rust_type_ident [ rust_generics ] _ "{
 
 rust_type ->
     rust_primitive_type
-  | "&" [ "mut" _ ] rust_type
+  | "&" rust_type
+  | "&mut" _ rust_type
   | "Result<" rust_type "," _ rust_type_ident ">"
   | rust_type_ident [ "<" rust_type ">" ]
   ;
@@ -129,21 +150,35 @@ rust_number_literal ->
   | "100"
   | "3.14"
   | "2.718"
+  | rust_number_literal _ rust_infix_operator _ rust_number_literal
+  | "~" rust_number_literal
   ;
 
 rust_string_literal -> "\"" rust_string_content "\"" ;
 
 rust_string_content ->
-    "a string, with a comma!"
+    "with, a comma!"
   | "blah"
   | "click"
   | "bump"
   | "xavier"
   | "quiz"
-  | "limoncello"
+  | "cello"
+  | "form"
+  | "orange\\yellow"
+  | "\t \n"
   ;
 
 rust_bool_literal -> "true" | "false" ;
+
+rust_vec_literal -> "vec![" rust_vec_items "]" ;
+
+rust_vec_items ->
+    ""
+  | rust_expression
+  | rust_expression "," _ rust_expression
+  | rust_expression "," _ rust_expression "," _ rust_expression
+  ;
 
 rust_type_ident ->
     "Person"
@@ -171,6 +206,14 @@ rust_fn_ident ->
   | "create_new"
   | "update"
   | "delete"
+  | "len"
+  | "push"
+  | "pop"
+  | "insert"
+  | "remove"
+  | "contains"
+  | "to_string"
+  | "parse"
   ;
 
 rust_var_ident ->
@@ -188,4 +231,9 @@ rust_var_ident ->
   | "size"
   | "color"
   | "flag"
+  | "vec"
+  | "map"
+  | "set"
+  | "string"
+  | "obj"
   ;

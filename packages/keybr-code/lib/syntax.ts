@@ -89,7 +89,7 @@ export class Syntax implements EnumItem {
   }
 
   generate(rng?: RNG): string {
-    const output = new Output(250);
+    const output = new Output(200);
     while (true) {
       try {
         if (output.length > 0) {

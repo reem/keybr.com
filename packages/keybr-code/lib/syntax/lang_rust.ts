@@ -21,6 +21,10 @@ export default {
   },
   rust_function: {
     seq: [
+      {
+        f: 0.5,
+        opt: "async ",
+      },
       "fn ",
       {
         ref: "rust_fn_ident",
@@ -267,21 +271,25 @@ export default {
         ref: "rust_function_call",
       },
       {
+        ref: "rust_method_call",
+      },
+      {
         ref: "rust_infix_expression",
       },
       {
-        seq: [
-          "(",
-          {
-            ref: "rust_expression",
-          },
-          ", ",
-          {
-            ref: "rust_expression",
-          },
-          ")",
-        ],
+        ref: "rust_try_expression",
       },
+      {
+        ref: "rust_vec_literal",
+      },
+    ],
+  },
+  rust_try_expression: {
+    seq: [
+      {
+        ref: "rust_expression",
+      },
+      "?",
     ],
   },
   rust_function_call: {
@@ -297,6 +305,53 @@ export default {
         },
       },
       ")",
+    ],
+  },
+  rust_method_call_partial: {
+    seq: [
+      ".",
+      {
+        ref: "rust_fn_ident",
+      },
+      "(",
+      {
+        f: 0.5,
+        opt: {
+          ref: "rust_expression",
+        },
+      },
+      ")",
+    ],
+  },
+  rust_method_calls: {
+    seq: [
+      {
+        ref: "rust_method_call_partial",
+      },
+      {
+        f: 0.5,
+        opt: ".await",
+      },
+      {
+        f: 0.5,
+        opt: "?",
+      },
+      {
+        f: 0.5,
+        opt: {
+          ref: "rust_method_calls",
+        },
+      },
+    ],
+  },
+  rust_method_call: {
+    seq: [
+      {
+        ref: "rust_var_ident",
+      },
+      {
+        ref: "rust_method_calls",
+      },
     ],
   },
   rust_infix_expression: {
@@ -315,29 +370,16 @@ export default {
     ],
   },
   rust_infix_operator: {
-    alt: [
-      "+",
-      "-",
-      "*",
-      "/",
-      "%",
-      "==",
-      "!=",
-      "<",
-      ">",
-      "<=",
-      ">=",
-      "&&",
-      "||",
-      "&",
-      "|",
-      "^",
-      "<<",
-      ">>",
-    ],
+    alt: ["+", "-", "*", "/", "%", "!=", "<=", ">=", "||", "|", "^"],
   },
   rust_struct: {
     seq: [
+      {
+        f: 0.5,
+        opt: {
+          ref: "rust_derive_annotation",
+        },
+      },
       "struct ",
       {
         ref: "rust_type_ident",
@@ -358,6 +400,36 @@ export default {
       },
       " }",
     ],
+  },
+  rust_derive_annotation: {
+    seq: [
+      "#[derive(",
+      {
+        ref: "rust_derive_traits",
+      },
+      ")] ",
+    ],
+  },
+  rust_derive_traits: {
+    alt: [
+      {
+        ref: "rust_derive_trait",
+      },
+      {
+        seq: [
+          {
+            ref: "rust_derive_trait",
+          },
+          ", ",
+          {
+            ref: "rust_derive_traits",
+          },
+        ],
+      },
+    ],
+  },
+  rust_derive_trait: {
+    alt: ["Debug", "Clone", "PartialEq", "Eq", "Default", "Hash", "Copy"],
   },
   rust_struct_field: {
     seq: [
@@ -410,9 +482,13 @@ export default {
         seq: [
           "&",
           {
-            f: 0.5,
-            opt: "mut ",
+            ref: "rust_type",
           },
+        ],
+      },
+      {
+        seq: [
+          "&mut ",
           {
             ref: "rust_type",
           },
@@ -469,7 +545,37 @@ export default {
     ],
   },
   rust_number_literal: {
-    alt: ["0", "1", "42", "100", "3.14", "2.718"],
+    alt: [
+      "0",
+      "1",
+      "42",
+      "100",
+      "3.14",
+      "2.718",
+      {
+        seq: [
+          {
+            ref: "rust_number_literal",
+          },
+          " ",
+          {
+            ref: "rust_infix_operator",
+          },
+          " ",
+          {
+            ref: "rust_number_literal",
+          },
+        ],
+      },
+      {
+        seq: [
+          "~",
+          {
+            ref: "rust_number_literal",
+          },
+        ],
+      },
+    ],
   },
   rust_string_literal: {
     seq: [
@@ -482,17 +588,63 @@ export default {
   },
   rust_string_content: {
     alt: [
-      "a string, with a comma!",
+      "with, a comma!",
       "blah",
       "click",
       "bump",
       "xavier",
       "quiz",
-      "limoncello",
+      "cello",
+      "form",
+      "orange\\yellow",
+      "\t \n",
     ],
   },
   rust_bool_literal: {
     alt: ["true", "false"],
+  },
+  rust_vec_literal: {
+    seq: [
+      "vec![",
+      {
+        ref: "rust_vec_items",
+      },
+      "]",
+    ],
+  },
+  rust_vec_items: {
+    alt: [
+      "",
+      {
+        ref: "rust_expression",
+      },
+      {
+        seq: [
+          {
+            ref: "rust_expression",
+          },
+          ", ",
+          {
+            ref: "rust_expression",
+          },
+        ],
+      },
+      {
+        seq: [
+          {
+            ref: "rust_expression",
+          },
+          ", ",
+          {
+            ref: "rust_expression",
+          },
+          ", ",
+          {
+            ref: "rust_expression",
+          },
+        ],
+      },
+    ],
   },
   rust_type_ident: {
     alt: [
@@ -522,6 +674,14 @@ export default {
       "create_new",
       "update",
       "delete",
+      "len",
+      "push",
+      "pop",
+      "insert",
+      "remove",
+      "contains",
+      "to_string",
+      "parse",
     ],
   },
   rust_var_ident: {
@@ -540,6 +700,11 @@ export default {
       "size",
       "color",
       "flag",
+      "vec",
+      "map",
+      "set",
+      "string",
+      "obj",
     ],
   },
 } as Rules;
